@@ -1,3 +1,7 @@
 cs8.crossreferencer
 ===================
-written by Jake Kosberg
+Compile with: `make`
+
+Run with: `./cr infile.txt`
+
+This program creates a cross-reference for the HTML files in `data/`.
