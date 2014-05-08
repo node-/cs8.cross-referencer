@@ -16,6 +16,7 @@ populate_ref(struct tailq *queue, struct tailq_node *node)
     struct file* f = node->data;
     char* buff = mmap_file(f->fname);
     char ref[MAX_LINE];
+    
     for (int i = 0; buff[i]; i++) {
         if (strncmp(buff+i, "<a href=", 8) == 0)
         {

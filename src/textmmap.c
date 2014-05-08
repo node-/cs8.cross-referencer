@@ -7,6 +7,7 @@ extern "C" {
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <assert.h>
 
 #include "tailq.h"
 #include "parser.h"
@@ -17,6 +18,8 @@ mmap_file(char* infile)
     int f;
     char* c;
     struct stat sb;
+
+    assert(infile);
     
     // Open the file as read only
     if ((f = open(infile, O_RDONLY)) < 0)

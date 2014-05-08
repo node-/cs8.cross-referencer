@@ -21,7 +21,15 @@ main(int argc, char **argv)
     struct tailq        queue;
     struct tailq_node   *node;
     
-    take_input("Input file: ", infile);
+    if (argc == 1)
+        take_input("Input file: ", infile);
+    else if (argc == 2)
+        strncpy(infile, argv[1], MAX_FILENAME-1);
+    else {
+        printf("usage: ./cr [in file]\n");
+        exit(-1);
+    }
+    
     extract_files(&queue, infile);
     
     node = queue.head;
@@ -60,7 +68,7 @@ extract_files(struct tailq *queue, char *infile)
     
     // Read each line into the queue
     for (int i = 0; i<fileLen+1; i++) {
-        if (file[i] == '\n' || file[i] == '\0') {
+        if (file[i] == '\n' || (i > 0 && file[i] == '\0' && file[i-1] != '\n')) {
             length = i-newLineIndex;
             strncpy(html_fname, file+newLineIndex, length);
             html_fname[length] = '\0';
