@@ -11,7 +11,6 @@
 #include "tailq.h"
 
 void extract_files(struct tailq *queue, char *infile);
-void take_input(const char *query, char *infile);
 char* mmap_file(char *infile);
 
 int
@@ -21,50 +20,44 @@ main(int argc, char **argv)
     struct tailq        queue;
     struct tailq_node   *node;
     
-    if (argc == 1)
-        take_input("Input file: ", infile);
-    else if (argc == 2)
+    if (argc == 1) {
+        file_add(&queue, "index.html");
+    } else if (argc == 2) {
         strncpy(infile, argv[1], MAX_FILENAME-1);
-    else {
+        extract_files(&queue, infile);
+    } else {
         printf("usage: ./cr [in file]\n");
         exit(-1);
     }
     
-    extract_files(&queue, infile);
-    
     node = queue.head;
-    for (int i=0; node; i++) {
-        populate_ref(&queue, node);
+    for (int i = 0; node; i++) {
+        if (!populate_ref(&queue, node))
+            tailq_remove(&queue, node);
         node = node->next;
     }
     print_results(&queue);
     
-    return 0;
-}
-
-void
-take_input(const char *query, char *infile)
-{
-    unsigned long infileLen;
-    printf("%s", query);
+    getchar();
+    printf("Bye!\n");
     
-    if (!fgets(infile, MAX_FILENAME, stdin)) {
-        printf("Error taking input\n");
-        exit(-1);
-    }
-     
-    infileLen = strlen(infile);
-    if (infile[infileLen-1] == '\n')
-        infile[infileLen-1] = '\0';
+    return 0;
 }
 
 void
 extract_files(struct tailq *queue, char *infile)
 {
     char html_fname[MAX_FILENAME];
-    char *file = mmap_file(infile);
+    char *file;
     int newLineIndex = 0, length = 0;
-    unsigned long fileLen = strlen(file);
+    unsigned long fileLen;
+    
+    file = mmap_file(infile);
+    
+    if (!file)
+        return;
+    
+    fileLen = strlen(file);
     
     // Read each line into the queue
     for (int i = 0; i<fileLen+1; i++) {

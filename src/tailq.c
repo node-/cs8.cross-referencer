@@ -1,5 +1,5 @@
 #ifdef __cplusplus
-extern "C" {
+//extern "C" {
 #endif
 
 #include <stdio.h>
@@ -22,9 +22,38 @@ tailq_insert(struct tailq *queue, struct tailq_node *node)
         queue->tail = node;
     }
 }
+    
+void
+tailq_remove(struct tailq *queue, struct tailq_node *node)
+{
+    struct tailq_node *prev_node = tailq_prev(queue, node);
+    
+    if (node == queue->head)
+        queue->head = node->next;
+    
+    if (node == queue->tail)
+        queue->tail = prev_node;
+    
+    if (prev_node)
+        prev_node->next = node->next;
+    
+    free(node);
+}
 
 struct tailq_node*
-tailq_search(struct tailq *queue, char *s)
+tailq_prev(struct tailq *queue, struct tailq_node *node)
+{
+    struct tailq_node *nodefind = queue->head;
+    
+    for (; nodefind; nodefind = nodefind->next) {
+        if (nodefind->next && node == nodefind->next)
+            return nodefind;
+    }
+    return NULL;
+}
+
+struct tailq_node*
+tailq_search_str(struct tailq *queue, char *s)
 {
     struct tailq_node *node = queue->head;
     
@@ -69,17 +98,18 @@ oom_exit(const char *file, int line)
     exit(-1);
 }
 
-void
+int
 attempt_link_add(struct tailq *queue, char *to, char *from)
 {
-    struct tailq_node* node = tailq_search(queue, to);
+    struct tailq_node* node = tailq_search_str(queue, to);
     if (!node)
-        return;
+        node = file_add(queue, to);
     struct file *f = node->data;
     link_add(f->ref_from, from);
+    return 1;
 }
 
-void
+struct tailq_node*
 link_add(struct tailq *queue, char *linkname)
 {
     struct tailq_node *node;
@@ -94,10 +124,11 @@ link_add(struct tailq *queue, char *linkname)
     
     node->data = strdup(linkname);
     tailq_insert(queue, node);
+    return node;
 }
 
 
-void
+struct tailq_node*
 file_add(struct tailq *queue, char *filename)
 {
     struct tailq_node *node;
@@ -133,8 +164,9 @@ file_add(struct tailq *queue, char *filename)
     
     node->data = f;
     tailq_insert(queue, node);
+    return node;
 }
 
 #ifdef __cplusplus
-}
+//}
 #endif

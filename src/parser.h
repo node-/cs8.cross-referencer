@@ -7,7 +7,7 @@
 
 #include "tailq.h"
 
-void
+int
 populate_ref(struct tailq *queue, struct tailq_node *node);
 
 #endif // _PARSER_H_

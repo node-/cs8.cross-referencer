@@ -19,12 +19,14 @@ struct file {
 };
 
 void tailq_insert(struct tailq *queue, struct tailq_node *node);
-struct tailq_node* tailq_search(struct tailq *queue, char *s);
+void tailq_remove(struct tailq *queue, struct tailq_node *node);
+struct tailq_node* tailq_prev(struct tailq *queue, struct tailq_node *node);
+struct tailq_node* tailq_search_str(struct tailq *queue, char *s);
 
 void print_results(struct tailq *queue);
 void oom_exit(const char *file, int line);
-void attempt_link_add(struct tailq *queue, char *from, char *to);
-void link_add(struct tailq *queue, char *linkname);
-void file_add(struct tailq *queue, char *filename);
+int attempt_link_add(struct tailq *queue, char *from, char *to);
+struct tailq_node* link_add(struct tailq *queue, char *linkname);
+struct tailq_node* file_add(struct tailq *queue, char *filename);
 
 #endif // _TAILQ_H_
